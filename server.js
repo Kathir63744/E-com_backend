@@ -30,18 +30,22 @@ app.use('/api/orders', orderRoutes);
 // MongoDB connection
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected');
+    if (!process.env.MONGO_URI) {
+      throw new Error("❌ MONGO_URI is missing from .env file");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected to Atlas");
 
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () =>
+      console.log(`🚀 Server running at http://localhost:${PORT}`)
+    );
   } catch (err) {
-    console.error('MongoDB connection failed:', err.message);
+    console.error("❌ MongoDB connection failed:", err.message);
     process.exit(1);
   }
 };
+
 
 startServer();
