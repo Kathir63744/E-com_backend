@@ -1,10 +1,11 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+// Load environment variables
 dotenv.config();
+
 const app = express();
 
 // Middleware
@@ -27,14 +28,17 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 
-// MongoDB connection
+// Ensure Mongo URI exists
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('❌ MONGO_URI is missing! Set it in your environment variables.');
+  process.exit(1);
+}
+
+// Start server & connect to MongoDB
 const startServer = async () => {
   try {
-    if (!process.env.MONGO_URI) {
-      throw new Error("❌ MONGO_URI is missing from .env file");
-    }
-
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(MONGO_URI);
     console.log("✅ MongoDB connected to Atlas");
 
     const PORT = process.env.PORT || 5000;
@@ -46,6 +50,5 @@ const startServer = async () => {
     process.exit(1);
   }
 };
-
 
 startServer();
